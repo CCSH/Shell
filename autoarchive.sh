@@ -1,18 +1,18 @@
 #!/bin/sh
 # 使用方法
 # 1.将autoarchive.sh和附件中的plist，放在一起，新建文件夹为Shell，将这几文件复制进去，然后复制Shell文件夹到工程的根目录
-# 2.终端cd到Shell下，执行脚本 格式为 sh autoarchive.sh
+# 2.终端cd到Shell下，执行脚本 格式为 sh 脚本名字.sh
 
 # 配置信息
 #工程名字
 target_name="xxx"
-#工程中Target对应的配置plist文件名称, Xcode默认的配置文件为Info.plist
-info_plist_name="Info"
 
 echo "\033[32m****************\n开始自动打包\n****************\033[0m\n"
 
 # ==========自动打包配置信息部分========== #
 
+#工程中Target对应的配置plist文件名称, Xcode默认的配置文件为Info.plist
+info_plist_name="Info"
 #返回上一级目录,进入项目工程目录
 cd ..
 #获取项目名称
@@ -23,9 +23,10 @@ info_plist_path="$project_name/$info_plist_name.plist"
 #获取版本号
 bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" $info_plist_path`
 
-#设置build版本号
+#设置build版本号（可以不进行设置）
 date=`date +"%Y%m%d%H%M"`
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $date" "$info_plist_path"
+
 #获取build版本号
 bundle_build_version=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" $info_plist_path`
 
@@ -35,9 +36,9 @@ rm -rf ./$target_name-IPA
 export_path=./$target_name-IPA
 #指定输出归档文件地址
 export_archive_path="$export_path/$target_name.xcarchive"
-# 指定输出ipa地址
+#指定输出ipa地址
 export_ipa_path="$export_path"
-# 指定输出ipa名称 : target_name + bundle_version + bundle_build_version
+#指定输出ipa名称 : target_name + bundle_version + bundle_build_version
 ipa_name="$target_name-V$bundle_version($bundle_build_version)"
 
 echo "\033[32m****************\n自动打包选择配置部分\n****************\033[0m\n"
@@ -54,14 +55,12 @@ archiveRun () {
     read is_workspace_parame
     sleep 0.5
 
-    if [ "$is_workspace_parame"  == "1" ]
+    if [ "$is_workspace_parame" == "1" ]
     then
-        is_workspace="1"
-    echo "\033[32m****************\n您选择了是工作空间 将采用：xcworkspace\n****************\033[0m\n"
-    elif [ "$is_workspace_parame"  == "2" ]
+        echo "\033[32m****************\n您选择了是工作空间 将采用：xcworkspace\n****************\033[0m\n"
+    elif [ "$is_workspace_parame" == "2" ]
     then
-        is_workspace="0"
-    echo "\033[32m****************\n您选择了不是工作空间 将采用：xcodeproj\n****************\033[0m\n"
+        echo "\033[32m****************\n您选择了不是工作空间 将采用：xcodeproj\n****************\033[0m\n"
     else
         echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
         archiveRun
@@ -78,11 +77,9 @@ configurationRun () {
     read build_configuration_param
     sleep 0.5
 
-    if [ "$build_configuration_param" == "1" ]
-    then
+    if [ "$build_configuration_param" == "1" ]; then
         build_configuration="Release"
-    elif [ "$build_configuration_param" == "2" ]
-    then
+    elif [ "$build_configuration_param" == "2" ]; then
         build_configuration="Debug"
     else
         echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
@@ -105,20 +102,16 @@ methodRun () {
     read method_param
     sleep 0.5
 
-    if [ "$method_param" == "1" ]
-    then
+    if [ "$method_param" == "1" ]; then
         exportOptionsPlistPath="AdHocExportOptions"
         echo "\033[32m****************\n您选择了 AdHoc 打包类型\n****************\033[0m\n"
-    elif [ "$method_param" == "2" ]
-    then
+    elif [ "$method_param" == "2" ]; then
         exportOptionsPlistPath="AppStoreExportOptions"
         echo "\033[32m****************\n您选择了 AppStore 打包类型\n****************\033[0m\n"
-    elif [ "$method_param" == "3" ]
-    then
+    elif [ "$method_param" == "3" ]; then
         exportOptionsPlistPath="EnterpriseExportOptions"
         echo "\033[32m****************\n您选择了 Enterprise 打包类型\n****************\033[0m\n"
-    elif [ "$method_param" == "4" ]
-    then
+    elif [ "$method_param" == "4" ]; then
         exportOptionsPlistPath="DevelopmentExportOptions"
         echo "\033[32m****************\n您选择了 Development 打包类型\n****************\033[0m\n"
     else
@@ -128,14 +121,67 @@ methodRun () {
 }
 methodRun
 
+# 输入是否上传bugly
+uploadBuglyRun () {
+    # 输入打包类型
+    echo "\033[36;1m请选择是否上传bugly(输入序号, 按回车即可) \033[0m"
+    echo "\033[33;1m1. 不上传 \033[0m"
+    echo "\033[33;1m2. 上传 \033[0m"
+    #读取用户输入
+    read bugly_param
+    sleep 0.5
+
+    if [ "$bugly_param" == "1" ]; then
+        echo "\033[32m****************\n您选择了不上传 bugly\n****************\033[0m\n"
+    elif [ "$bugly_param" == "2" ]; then
+        echo "\033[32m****************\n您选择了上传 bugly\n****************\033[0m\n"
+    else
+        echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
+        uploadBuglyRun
+    fi
+}
+uploadBuglyRun
+
+# 输入上传类型
+publishRun () {
+    # 输入打包类型
+    echo "\033[36;1m请选择上传类型(输入序号, 按回车即可) \033[0m"
+    echo "\033[33;1m1. 不上传 \033[0m"
+    echo "\033[33;1m2. AppStore \033[0m"
+    #读取用户输入
+    read publish_param
+    sleep 0.5
+
+    if [ "$publish_param" == "1" ]; then
+        echo "\033[32m****************\n您选择了不上传\n****************\033[0m\n"
+    elif [ "$publish_param" == "2" ]; then
+        echo "\033[32m****************\n您选择了上传 AppStore\n****************\033[0m\n"
+    else
+        echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
+        publishRun
+    fi
+}
+publishRun
+
+#选择了2、Release、AppStore
+if [ "$method_param" == "2" -a "$build_configuration" == "Release" -a "$publish_param" == "2" ]
+then
+    #上传App Store
+    echo "请输入开发者账号："
+    read username_param
+    sleep 0.5
+
+    echo "请输入开发者账号密码："
+    read password_param
+    sleep 0.5
+fi
+
 echo "\033[32m****************\n打包信息配置完毕，输入回车开始进行打包\n****************\033[0m\n"
 read start
 sleep 0.5
 
 echo "\033[32m****************\n开始清理工程\n****************\033[0m\n"
 
-# 清理工程
-xcodebuild clean -configuration "$build_configuration" -alltargets
 # 删除旧的文件
 rm -rf "$export_path"
 # 指定输出文件目录不存在则创建
@@ -145,17 +191,23 @@ else
     mkdir -pv $export_path
 fi
 
+# 清理工程
+xcodebuild clean -configuration "$build_configuration" -alltargets
+
 echo "\033[32m****************\n开始编译项目 ${build_configuration}  ${exportOptionsPlistPath}\n****************\033[0m\n"
 
 # 开始编译
-if [ "$is_workspace" == "1" ]
+if [ "$is_workspace_parame" == "1" ]
 then
+    #工作空间
     xcodebuild archive \
     -workspace ${project_name}.xcworkspace \
     -scheme ${target_name} \
     -configuration ${build_configuration} \
-    -archivePath $export_archive_path -quiet  || exit
+    -destination generic/platform=ios \
+    -archivePath $export_archive_path
 else
+    #不是工作空间
     xcodebuild archive \
     -project ${project_name}.xcodeproj \
     -scheme ${target_name} \
@@ -173,6 +225,7 @@ else
 fi
 
 echo "\033[32m****************\n开始导出ipa文件\n****************\033[0m\n"
+
 #1、打包命令
 #2、归档文件地址
 #3、ipa输出地址
@@ -180,7 +233,7 @@ echo "\033[32m****************\n开始导出ipa文件\n****************\033[0m\n
 xcodebuild -exportArchive \
 -archivePath ${export_archive_path} \
 -configuration ${build_configuration} \
--exportPath ${export_ipa_path} \
+-exportPath ${export_ipa_path}  \
 -exportOptionsPlist "./Shell/${exportOptionsPlistPath}.plist"
 
 # 修改ipa文件名称
@@ -200,34 +253,47 @@ open $export_path
 # 输出
 echo "\033[32m****************\n使用Shell脚本打包完毕\n****************\033[0m\n"
 
-#判断是否上传AppStore
-#AppStor、Release
-if [ "$exportOptionsPlistPath" == "AppStoreExportOptions" ]
+#上传 AppStore
+if [ -n "$username_param" -a -n "$password_param" -a "$method_param" == "2" -a "$build_configuration" == "Release" -a "$publish_param" == "2" ]
 then
-    if [ "$build_configuration" == "Release" ]
-    then
-        # 输入是否上传AppStore
-        echo "\033[36;1m是否上传AppStore(输入序号, 按回车即可) \033[0m"
-        echo "\033[33;1m1. 上传\033[0m"
-        echo "\033[33;1m2. 不上传\033[0m"
-        read is_publish_param
-        sleep 0.5
+    echo "\033[32m****************\n开始上传AppStore\n****************\033[0m\n"
+    #验证APP
+    altoolPath="/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool"
+    "${altoolPath}" --validate-app \
+    -f "${export_ipa_path}/${ipa_name}.ipa" \
+    -u "$username_param" \
+    -p "$password_param" \
+    --output-format xml
+    #上传APP
+    "${altoolPath}" --upload-app \
+    -f "${export_ipa_path}/${ipa_name}.ipa" \
+    -u "$username_param" \
+    -p "$password_param" \
+    --output-format xml
+    echo "\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
+fi
 
-        if [ "$is_publish_param"  == "1" ]
-        then
-            #上传App Store
-            echo "请输入开发者账号："
-            read username_param
-            sleep 0.5
+#上传 bugly
+if [ "$bugly_param" == "2" ]
+then
+    echo "\033[32m****************\n开始上传bugly\n****************\033[0m\n"
+    bugly_app_id="xxxxxxxx"
+    bugly_app_key="xxxxxxxx"
+    #id
+    bundle_id="$bundle_identify"
+    #版本
+    app_version="$bundle_version($bundle_build_version)"
+    #dsym 路径
+    dsymfile_path="${export_archive_path}/dSYMs/${target_name}.app.dSYM"
 
-            echo "请输入开发者账号密码："
-            read password_param
-            sleep 0.5
+    zip_path="${export_path}"
 
-            #网址
-            altoolPath="/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool"
-            "${altoolPath}" --validate-app -f "$ipa_path/${target_name}.ipa" -u "$username_param" -p "$password_param" --output-format xml
-            "${altoolPath}" --upload-app -f "$ipa_path/${target_name}.ipa" -u "$username_param" -p "$password_param" --output-format xml
-        fi
-    fi
+    java -jar buglySymboliOS.jar \
+    -i "${dsymfile_path}" \
+    -u -id "${bugly_app_id}" \
+    -key "${bugly_app_key}" \
+    -package "${bundle_id}" \
+    -version "${app_version}" \
+    -o "${zip_path}"
+    echo "\033[32m****************\n上传bugly完成\n****************\033[0m\n"
 fi
