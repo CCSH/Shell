@@ -121,27 +121,6 @@ methodRun () {
 }
 methodRun
 
-# 输入是否上传bugly
-uploadBuglyRun () {
-    # 输入打包类型
-    echo "\033[36;1m请选择是否上传bugly(输入序号, 按回车即可) \033[0m"
-    echo "\033[33;1m1. 不上传 \033[0m"
-    echo "\033[33;1m2. 上传 \033[0m"
-    #读取用户输入
-    read bugly_param
-    sleep 0.5
-
-    if [ "$bugly_param" == "1" ]; then
-        echo "\033[32m****************\n您选择了不上传 bugly\n****************\033[0m\n"
-    elif [ "$bugly_param" == "2" ]; then
-        echo "\033[32m****************\n您选择了上传 bugly\n****************\033[0m\n"
-    else
-        echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
-        uploadBuglyRun
-    fi
-}
-uploadBuglyRun
-
 # 输入上传类型
 publishRun () {
     # 输入打包类型
@@ -205,7 +184,7 @@ then
     -scheme ${target_name} \
     -configuration ${build_configuration} \
     -destination generic/platform=ios \
-    -archivePath $export_archive_path
+    -archivePath ${export_archive_path}
 else
     #不是工作空间
     xcodebuild archive \
@@ -271,29 +250,4 @@ then
     -p "$password_param" \
     --output-format xml
     echo "\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
-fi
-
-#上传 bugly
-if [ "$bugly_param" == "2" ]
-then
-    echo "\033[32m****************\n开始上传bugly\n****************\033[0m\n"
-    bugly_app_id="xxxxxxxx"
-    bugly_app_key="xxxxxxxx"
-    #id
-    bundle_id="$bundle_identify"
-    #版本
-    app_version="$bundle_version($bundle_build_version)"
-    #dsym 路径
-    dsymfile_path="${export_archive_path}/dSYMs/${target_name}.app.dSYM"
-
-    zip_path="${export_path}"
-
-    java -jar buglySymboliOS.jar \
-    -i "${dsymfile_path}" \
-    -u -id "${bugly_app_id}" \
-    -key "${bugly_app_key}" \
-    -package "${bundle_id}" \
-    -version "${app_version}" \
-    -o "${zip_path}"
-    echo "\033[32m****************\n上传bugly完成\n****************\033[0m\n"
 fi
