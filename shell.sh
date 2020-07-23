@@ -5,7 +5,7 @@
 
 # 配置信息
 #工程名字
-target_name="xxx"
+target_name="XXX"
 
 echo "\033[32m****************\n开始自动打包\n****************\033[0m\n"
 
@@ -125,35 +125,25 @@ methodRun
 publishRun () {
     # 输入打包类型
     echo "\033[36;1m请选择上传类型(输入序号, 按回车即可) \033[0m"
-    echo "\033[33;1m1. 不上传 \033[0m"
+    echo "\033[33;1m1. 蒲公英 \033[0m"
     echo "\033[33;1m2. AppStore \033[0m"
+    echo "\033[33;1m3. 不上传 \033[0m"
     #读取用户输入
     read publish_param
     sleep 0.5
 
     if [ "$publish_param" == "1" ]; then
-        echo "\033[32m****************\n您选择了不上传\n****************\033[0m\n"
+        echo "\033[32m****************\n您选择了蒲公英\n****************\033[0m\n"
     elif [ "$publish_param" == "2" ]; then
         echo "\033[32m****************\n您选择了上传 AppStore\n****************\033[0m\n"
+    elif [ "$publish_param" == "3" ]; then
+        echo "\033[32m****************\n您选择了不上传\n****************\033[0m\n"
     else
         echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
         publishRun
     fi
 }
 publishRun
-
-#选择了2、Release、AppStore
-if [ "$method_param" == "2" -a "$build_configuration" == "Release" -a "$publish_param" == "2" ]
-then
-    #上传App Store
-    echo "请输入开发者账号："
-    read username_param
-    sleep 0.5
-
-    echo "请输入开发者账号密码："
-    read password_param
-    sleep 0.5
-fi
 
 echo "\033[32m****************\n打包信息配置完毕，输入回车开始进行打包\n****************\033[0m\n"
 read start
@@ -197,7 +187,7 @@ fi
 # 检查是否构建成功
 # xcarchive 实际是一个文件夹不是一个文件所以使用 -d 判断
 if test -d "$export_archive_path" ; then
-    echo "\033[32m****************\n项目编译成功\n****************\033[0m\n"
+    echo "\033[32m****************\n项目编译完毕\n****************\033[0m\n"
 else
     echo "\033[32m****************\n项目编译失败\n****************\033[0m\n"
     exit 1
@@ -250,4 +240,17 @@ then
     -p "$password_param" \
     --output-format xml
     echo "\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
+fi
+
+#上传 蒲公英
+if [ "$publish_param" == "1" ]
+then
+    echo "\033[32m****************\n开始上传蒲公英\n****************\033[0m\n"
+
+    curl -F "file=@${export_ipa_path}/${ipa_name}.ipa" \
+    -F "uKey=xxxxxxxxxx" \
+    -F "_api_key=xxxxxxxxx" \
+    https://qiniu-storage.pgyer.com/apiv1/app/upload
+
+    echo "\033[32m****************\n上传蒲公英完毕\n****************\033[0m\n"
 fi
