@@ -4,6 +4,8 @@
 <dict>
 	<key>compileBitcode</key>
 	<false/>
+	<key>destination</key>
+	<string>export</string>
 	<key>method</key>
 	<string>development</string>
 	<key>signingStyle</key>
@@ -11,7 +13,7 @@
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>teamID</key>
-	<string>YHGV678NGG</string>
+	<string>xxx</string>
 	<key>thinning</key>
 	<string>&lt;none&gt;</string>
 </dict>

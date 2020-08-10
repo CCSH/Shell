@@ -4,21 +4,16 @@
 <dict>
 	<key>compileBitcode</key>
 	<false/>
+	<key>destination</key>
+	<string>export</string>
 	<key>method</key>
 	<string>ad-hoc</string>
-	<key>provisioningProfiles</key>
-	<dict>
-		<key>com.transfar.transfarSecureStage</key>
-		<string>TransfarSecureStage_adhoc</string>
-	</dict>
-	<key>signingCertificate</key>
-	<string>iPhone Distribution</string>
 	<key>signingStyle</key>
-	<string>manual</string>
+	<string>automatic</string>
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>teamID</key>
-	<string>YHGV678NGG</string>
+	<string>xxx</string>
 	<key>thinning</key>
 	<string>&lt;none&gt;</string>
 </dict>
