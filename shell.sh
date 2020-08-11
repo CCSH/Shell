@@ -49,7 +49,7 @@ export_path_archive="$export_path_ipa/$project_name.xcarchive"
 #指定输出ipa名称 : project_name + bundle_version + bundle_build_version
 ipa_name="$project_name-V$bundle_version($bundle_build_version)"
 #ipa最终路径
-path_ipa=$export_path_ipa/$ipa_name
+path_ipa=$export_path_ipa/$ipa_name.ipa
 
 echo "\033[32m****************\n自动打包选择配置部分\n****************\033[0m\n"
 
