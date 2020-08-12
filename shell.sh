@@ -13,7 +13,7 @@ parameter_configuration=""
 #打包类型
 parameter_type=""
 #上传类型
-parameter_upload=""
+parameter_upload="1"
 #上传appstore
 #账号
 parameter_username=""
@@ -247,38 +247,43 @@ fi
 
 echo "\n\033[32m****************\n使用Shell脚本打包完毕\n****************\033[0m\n"
 
-#上传 AppStore
-if [ ${#parameter_username} != 0 -a ${#parameter_password} != 0 -a "$parameter_type" == "2" -a "$parameter_configuration" == "Release" -a "$parameter_upload" == "2" ]
-then
-    echo "\n\033[32m****************\n开始上传AppStore\n****************\033[0m\n"
-    
-    #验证APP
-    altoolPath="/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool"
-    "${altoolPath}" --validate-app \
-    -f "$path_ipa" \
-    -u "$parameter_username" \
-    -p "$parameter_password" \
-    --output-format xml
-    
-    #上传APP
-    "${altoolPath}" --upload-app \
-    -f "$path_ipa" \
-    -u "$parameter_username" \
-    -p "$parameter_password" \
-    --output-format xml
-    echo "\n\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
-fi
-
 #上传 蒲公英
 if [ "$parameter_upload" == "1" ]
 then
-    echo "\n\033[32m****************\n开始上传蒲公英\n****************\033[0m\n"
-    
-    #上传
+    echo "\033[32m****************\n开始上传蒲公英\n****************\033[0m\n"
+
     curl -F "file=@$path_ipa" \
     -F "uKey=e5a9331a3fd25bc36646f831e4d42f2d" \
     -F "_api_key=ce1874dcf4523737c9c1d3eafd99164f" \
     https://qiniu-storage.pgyer.com/apiv1/app/upload
 
-    echo "\n\033[32m****************\n上传蒲公英完毕\n****************\033[0m\n"
+    echo "\033[32m****************\n上传蒲公英完毕\n****************\033[0m\n"
 fi
+
+
+#上传 AppStore
+if [ "$parameter_upload" == "2" ]
+then
+    #验证账号密码
+    if [ ${#parameter_username} != 0 -a ${#parameter_username} != 0 ]
+    then
+        echo "\n\033[32m****************\n开始上传AppStore\n****************\033[0m\n"
+        
+        #验证APP
+        altoolPath="/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool"
+        "${altoolPath}" --validate-app \
+        -f "$path_ipa" \
+        -u "$parameter_username" \
+        -p "$parameter_password" \
+        --output-format xml
+        #上传APP
+        "${altoolPath}" --upload-app \
+        -f "$path_ipa" \
+        -u "$parameter_username" \
+        -p "$parameter_password" \
+        --output-format xml
+        
+        echo "\n\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
+    fi
+fi
+
