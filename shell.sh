@@ -13,7 +13,7 @@ parameter_configuration=""
 #打包类型
 parameter_type=""
 #上传类型
-parameter_upload="1"
+parameter_upload=""
 #上传appstore
 #账号
 parameter_username=""
