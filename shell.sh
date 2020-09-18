@@ -6,19 +6,19 @@
 # 配置信息
 
 #这里配置完参数则下方不用进行手动输入（用于参数化构建）
-#是否为工作组
-parameter_workspace=""
-#打包模式
-parameter_configuration=""
-#打包类型
-parameter_type=""
-#上传类型
-parameter_upload=""
-#上传appstore
-#账号
-parameter_username=""
-#独立密码
-parameter_password=""
+##是否为工作组
+#parameter_workspace="1"
+##打包模式
+#parameter_configuration="1"
+##打包类型
+#parameter_type="4"
+##上传类型
+#parameter_upload="1"
+##上传appstore
+##账号
+#parameter_username=""
+##独立密码
+#parameter_password=""
 
 echo "\033[32m****************\n开始自动打包\n****************\033[0m\n"
 
@@ -36,8 +36,6 @@ info_plist_path="${project_name}/Info.plist"
 date=`date +"%Y%m%d%H%M"`
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $date" "$info_plist_path"
 
-#获取版本号
-bundle_version=`/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" ${info_plist_path}`
 #获取build版本号
 bundle_build_version=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${info_plist_path}`
 
@@ -45,11 +43,6 @@ bundle_build_version=`/usr/libexec/PlistBuddy -c "Print CFBundleVersion" ${info_
 export_path_ipa=./$project_name-IPA
 #指定输出归档文件地址
 export_path_archive="$export_path_ipa/$project_name.xcarchive"
-
-#指定输出ipa名称 : project_name + bundle_version + bundle_build_version
-ipa_name="$project_name-V$bundle_version($bundle_build_version)"
-#ipa最终路径
-path_ipa=$export_path_ipa/$ipa_name.ipa
 
 echo "\033[32m****************\n自动打包选择配置部分\n****************\033[0m\n"
 
@@ -234,14 +227,22 @@ xcodebuild -exportArchive \
 -exportPath ${export_path_ipa}  \
 -exportOptionsPlist "./Shell/${parameter_type}_ExportOptions.plist"
 
+#导出 ipa 名字
+app_name=`find . -name *.ipa | awk -F "[/.]" '{print $(NF-1)}'`
+
+#指定输出ipa名称 : app_name + bundle_build_version
+ipa_name="$app_name-V($bundle_build_version)"
+#ipa最终路径
+path_ipa=$export_path_ipa/$ipa_name.ipa
+
 # 修改ipa文件名称
-mv $export_path_ipa/$project_name.ipa $path_ipa
+mv $export_path_ipa/$app_name.ipa $path_ipa
 
 # 检查文件是否存在
 if test -f "$path_ipa" ; then
-    echo "\n\033[32m****************\n导出 $ipa_name.ipa 包成功\n****************\033[0m\n"
+    echo "\n\033[32m****************\n导出 $app_name.ipa 包成功\n****************\033[0m\n"
 else
-    echo "\n\033[32m****************\n导出 $ipa_name.ipa 包失败\n****************\033[0m\n"
+    echo "\n\033[32m****************\n导出 $app_name.ipa 包失败\n****************\033[0m\n"
     exit 1
 fi
 
@@ -255,7 +256,7 @@ then
     curl -F "file=@$path_ipa" \
     -F "uKey=e5a9331a3fd25bc36646f831e4d42f2d" \
     -F "_api_key=ce1874dcf4523737c9c1d3eafd99164f" \
-    https://qiniu-storage.pgyer.com/apiv1/app/upload
+    https://upload.pgyer.com/apiv1/app/upload
 
     echo "\033[32m****************\n上传蒲公英完毕\n****************\033[0m\n"
 fi
