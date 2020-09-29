@@ -11,9 +11,11 @@
 ##打包模式
 #parameter_configuration="1"
 ##打包类型
-#parameter_type="4"
+#parameter_type="2"
 ##上传类型
 #parameter_upload="1"
+#上传bugly
+#parameter_bugly="1"
 ##上传appstore
 ##账号
 #parameter_username=""
@@ -167,6 +169,32 @@ publishRun () {
 }
 publishRun
 
+# 输入是否上传bugly
+buglyRun () {
+    # 输入打包类型
+    echo "\033[36;1m请选择是否上传bugly(输入序号, 按回车即可) \033[0m"
+    echo "\033[33;1m1. 不上传 \033[0m"
+    echo "\033[33;1m2. 上传 \033[0m"
+    
+    if [ ${#parameter_bugly} == 0 ]
+    then
+        #读取用户输入
+        read parameter_bugly
+        sleep 0.5
+    fi
+
+    if [ "$parameter_bugly" == "1" ]; then
+        echo "\033[32m****************\n您选择了不上传 bugly\n****************\033[0m\n"
+    elif [ "$parameter_bugly" == "2" ]; then
+        echo "\033[32m****************\n您选择了上传 bugly\n****************\033[0m\n"
+    else
+        echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
+        parameter_bugly=""
+        buglyRun
+    fi
+}
+buglyRun
+
 echo "\n\033[32m****************\n打包信息配置完毕，开始进行打包\n****************\033[0m\n"
 echo "\n\033[32m****************\n开始清理工程\n****************\033[0m\n"
 
@@ -227,11 +255,14 @@ xcodebuild -exportArchive \
 -exportPath ${export_path_ipa}  \
 -exportOptionsPlist "./Shell/${parameter_type}_ExportOptions.plist"
 
-#导出 ipa 名字
+#app 名字
 app_name=`find . -name *.ipa | awk -F "[/.]" '{print $(NF-1)}'`
 
-#指定输出ipa名称 : app_name + bundle_build_version
-ipa_name="$app_name-V($bundle_build_version)"
+#app 版本号
+bundle_version=`xcodebuild -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION ='`
+
+#指定输出ipa名称 : project_name + bundle_build_version
+ipa_name="$app_name-V$bundle_version($bundle_build_version)"
 #ipa最终路径
 path_ipa=$export_path_ipa/$ipa_name.ipa
 
@@ -287,4 +318,27 @@ then
         echo "\n\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
     fi
 fi
+
+#上传 Bugly
+if [ "$parameter_bugly" == "2" ]
+then
+    echo "\033[32m****************\n开始上传bugly\n****************\033[0m\n"
+    bugly_app_id="xxx"
+    bugly_app_key="xxx"
+
+    #dsym 路径
+    dsymfile_path="${export_path_archive}/dSYMs/${app_name}.app.dSYM"
+    #jar 位置
+    java -jar buglySymboliOS.jar \
+    -i "${dsymfile_path}" \
+    -u -id "${bugly_app_id}" \
+    -key "${bugly_app_key}" \
+    -version "${bundle_version}" \
+    -o "${export_path_ipa}"
+    echo "\033[32m****************\n上传bugly完成\n****************\033[0m\n"
+fi
+
+
+
+
 

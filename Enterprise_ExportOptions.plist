@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>destination</key>
-	<string>export</string>
+	<key>compileBitcode</key>
+	<false/>
 	<key>method</key>
 	<string>enterprise</string>
 	<key>signingStyle</key>
@@ -11,8 +11,8 @@
 	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>teamID</key>
-	<string>G94X5Y9CST</string>
-	<key>uploadSymbols</key>
-	<true/>
+	<string>YHGV678NGG</string>
+	<key>thinning</key>
+	<string>&lt;none&gt;</string>
 </dict>
 </plist>
