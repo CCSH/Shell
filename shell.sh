@@ -302,15 +302,17 @@ then
         echo "\n\033[32m****************\n开始上传AppStore\n****************\033[0m\n"
         
         #验证APP
-        altoolPath="/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool"
-        "${altoolPath}" --validate-app \
+        xcrun altool --validate-app \
         -f "$path_ipa" \
+        -t iOS \
         -u "$parameter_username" \
         -p "$parameter_password" \
         --output-format xml
+        
         #上传APP
-        "${altoolPath}" --upload-app \
+        xcrun altool --upload-app \
         -f "$path_ipa" \
+        -t iOS \
         -u "$parameter_username" \
         -p "$parameter_password" \
         --output-format xml
@@ -323,22 +325,19 @@ fi
 if [ "$parameter_bugly" == "2" ]
 then
     echo "\033[32m****************\n开始上传bugly\n****************\033[0m\n"
-    bugly_app_id="xxx"
-    bugly_app_key="xxx"
+    bugly_app_id="fc42b13a1b"
+    bugly_app_key="b1fca7f9-29cf-4e64-ab1f-444391c25cfc"
 
     #dsym 路径
     dsymfile_path="${export_path_archive}/dSYMs/${app_name}.app.dSYM"
-    #jar 位置
+
+    zip_path="${export_path_ipa}"
+
     java -jar buglySymboliOS.jar \
     -i "${dsymfile_path}" \
     -u -id "${bugly_app_id}" \
     -key "${bugly_app_key}" \
     -version "${bundle_version}" \
-    -o "${export_path_ipa}"
+    -o "${zip_path}"
     echo "\033[32m****************\n上传bugly完成\n****************\033[0m\n"
 fi
-
-
-
-
-
