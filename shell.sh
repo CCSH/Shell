@@ -297,8 +297,7 @@ exportRun(){
     echo "\n\033[32m****************\n导出 $app_name.ipa 包失败\n****************\033[0m\n"
     exit 1
     fi
-}
-exportRun
+}exportRun
 
 echo "\n\033[32m****************\n使用Shell脚本打包完毕\n****************\033[0m\n"
 
@@ -314,7 +313,7 @@ uploadRun() {
     -F "_api_key=ce1874dcf4523737c9c1d3eafd99164f" \
     https://upload.pgyer.com/apiv1/app/upload
     
-    echo "\033[32m\n****************\n上传蒲公英完毕\n****************\033[0m\n"
+    echo "\n\033[32m\n****************\n上传蒲公英完毕\n****************\033[0m\n"
     fi
     
     #上传 AppStore
@@ -365,5 +364,4 @@ uploadRun() {
     -o "${zip_path}"
     echo "\033[32m****************\n上传bugly完成\n****************\033[0m\n"
     fi
-}
-uploadRun
+}uploadRun
