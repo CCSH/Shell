@@ -6,20 +6,18 @@
 # 配置信息
 
 #这里配置完参数则下方不用进行手动输入（用于参数化构建）
-##是否为工作组
+#是否为工作组
 #parameter_workspace="1"
-##打包模式
-#parameter_configuration="1"
-##打包类型
+#打包类型
 #parameter_type="1"
-##上传类型
+#打包模式
+#parameter_configuration="1"
+#上传类型
 #parameter_upload="1"
-#上传bugly
-parameter_bugly="1"
-##上传appstore
-##账号
+#上传appstore
+#账号
 #parameter_username=""
-##独立密码
+#独立密码
 #parameter_password=""
 
 echo "\033[32m****************\n开始自动打包\n****************\033[0m\n"
@@ -28,7 +26,7 @@ echo "\033[32m****************\n开始自动打包\n****************\033[0m\n"
 
 #返回上一级目录,进入项目工程目录
 cd ..
-configRun () {
+configRun() {
     #获取项目名称
     project_name=`find . -name *.xcodeproj | awk -F "[/.]" '{print $(NF-1)}'`
     
@@ -46,9 +44,6 @@ configRun () {
     export_path_ipa=./$project_name-IPA
     #指定输出归档文件地址
     export_path_archive="$export_path_ipa/$project_name.xcarchive"
-    
-    #app 名字
-    app_name=`find . -name *.ipa | awk -F "[/.]" '{print $(NF-1)}'`
 }
 configRun
 
@@ -56,7 +51,7 @@ echo "\033[32m****************\n自动打包选择配置部分\n****************
 
 # ==========自动打包可选择信息部分========== #
 # 输入是否为工作空间
-archiveRun () {
+archiveRun() {
     echo "\033[36;1m是否是工作空间(输入序号, 按回车即可) \033[0m"
     echo "\033[33;1m1. 是 \033[0m"
     echo "\033[33;1m2. 否 \033[0m"
@@ -80,7 +75,7 @@ archiveRun () {
 archiveRun
 
 # 输入打包类型
-methodRun () {
+methodRun() {
     echo "\033[36;1m请选择打包方式(输入序号, 按回车即可) \033[0m"
     echo "\033[33;1m1. AdHoc(预发) \033[0m"
     echo "\033[33;1m2. AppStore(发布) \033[0m"
@@ -113,7 +108,7 @@ methodRun () {
 methodRun
 
 # 输入打包模式
-configurationRun () {
+configurationRun() {
     echo "\033[36;1m请选择打包模式(输入序号, 按回车即可) \033[0m"
     echo "\033[33;1m1. Release \033[0m"
     echo "\033[33;1m2. Debug \033[0m"
@@ -139,7 +134,7 @@ configurationRun () {
 configurationRun
 
 # 输入上传类型
-publishRun () {
+publishRun() {
     echo "\033[36;1m请选择上传类型(输入序号, 按回车即可) \033[0m"
     echo "\033[33;1m1. 蒲公英 \033[0m"
     echo "\033[33;1m2. AppStore \033[0m"
@@ -165,32 +160,8 @@ publishRun () {
 }
 publishRun
 
-# 输入是否上传bugly
-buglyRun () {
-    echo "\033[36;1m请选择是否上传bugly(输入序号, 按回车即可) \033[0m"
-    echo "\033[33;1m1. 不上传 \033[0m"
-    echo "\033[33;1m2. 上传 \033[0m"
-    
-    if [ ${#parameter_bugly} == 0 ]; then
-    #读取用户输入
-    read parameter_bugly
-    sleep 0.5
-    fi
-    
-    if [ "$parameter_bugly" == "1" ]; then
-    echo "\033[32m****************\n您选择了不上传 bugly\n****************\033[0m\n"
-    elif [ "$parameter_bugly" == "2" ]; then
-    echo "\033[32m****************\n您选择了上传 bugly\n****************\033[0m\n"
-    else
-    echo "\n\033[31;1m**************** 您输入的参数,无效请重新输入!!! ****************\033[0m\n"
-    parameter_bugly=""
-    buglyRun
-    fi
-}
-buglyRun
-
 # 输入APPStore信息
-appStoreUserNameRun () {
+appStoreUserNameRun() {
     echo "\033[36;1m请输入APPStore账号(输入完毕, 按回车即可) \033[0m"
     if [ ${#parameter_username} == 0 ]; then
     #读取用户输入
@@ -212,9 +183,25 @@ then
 appStoreUserNameRun
 fi
 
+#选填蒲公英更新文案
+pgyUpdateContent() {
+    echo "\033[36;1m请输入蒲公英更新文案，选填(输入完毕, 按回车即可) \033[0m"
+    #读取用户输入
+    read updateDescription
+    echo "\n\033[32m****************\n更新文案\n$updateDescription\n****************\033[0m\n"
+    sleep 0.5
+}
+
+#选择上传 蒲公英
+if [ "$parameter_upload" == "1" ]
+then
+pgyUpdateContent
+fi
+
 echo "\n\033[32m****************\n打包信息配置完毕，开始进行打包\n****************\033[0m\n"
+
 # 归档编译
-archiveRun (){
+archiveRun() {
     echo "\n\033[32m****************\n开始清理工程\n****************\033[0m\n"
     
     #强制删除旧的文件夹
@@ -264,8 +251,9 @@ archiveRun (){
 archiveRun
 
 echo "\n\033[32m****************\n开始导出ipa文件\n****************\033[0m\n"
+
 # 导出ipa
-exportRun(){
+exportRun() {
     #1、打包命令
     #2、归档文件地址
     #3、ipa输出地址
@@ -297,7 +285,8 @@ exportRun(){
     echo "\n\033[32m****************\n导出 $app_name.ipa 包失败\n****************\033[0m\n"
     exit 1
     fi
-}exportRun
+}
+exportRun
 
 echo "\n\033[32m****************\n使用Shell脚本打包完毕\n****************\033[0m\n"
 
@@ -308,9 +297,11 @@ uploadRun() {
     then
     echo "\033[32m****************\n开始上传蒲公英\n****************\033[0m\n"
     
-    curl -F "file=@$path_ipa" \
+    curl --request POST \
+    -F "file=@$path_ipa" \
     -F "uKey=e5a9331a3fd25bc36646f831e4d42f2d" \
     -F "_api_key=ce1874dcf4523737c9c1d3eafd99164f" \
+    -F "updateDescription=$updateDescription" \
     https://upload.pgyer.com/apiv1/app/upload
     
     echo "\n\033[32m\n****************\n上传蒲公英完毕\n****************\033[0m\n"
@@ -319,49 +310,30 @@ uploadRun() {
     #上传 AppStore
     if [ "$parameter_upload" == "2" ]
     then
-    #验证账号密码
-    if [ ${#parameter_username} != 0 -a ${#parameter_username} != 0 ]
-    then
-    echo "\n\033[32m****************\n开始上传AppStore\n****************\033[0m\n"
+        #验证账号密码
+        if [ ${#parameter_username} != 0 -a ${#parameter_username} != 0 ]
+        then
+        echo "\n\033[32m****************\n开始上传AppStore\n****************\033[0m\n"
     
-    #验证APP
-    xcrun altool --validate-app \
-    -f "$path_ipa" \
-    -t iOS \
-    -u "$parameter_username" \
-    -p "$parameter_password" \
-    --output-format xml
+        #验证APP
+        xcrun altool --validate-app \
+        -f "$path_ipa" \
+        -t iOS \
+        -u "$parameter_username" \
+        -p "$parameter_password" \
+        --output-format xml
     
-    #上传APP
-    xcrun altool --upload-app \
-    -f "$path_ipa" \
-    -t iOS \
-    -u "$parameter_username" \
-    -p "$parameter_password" \
-    --output-format xml
+        #上传APP
+        xcrun altool --upload-app \
+        -f "$path_ipa" \
+        -t iOS \
+        -u "$parameter_username" \
+        -p "$parameter_password" \
+        --output-format xml
     
-    echo "\n\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
+        echo "\n\033[32m****************\n上传AppStore完毕\n****************\033[0m\n"
+        fi
     fi
-    fi
-    
-    #上传 Bugly
-    if [ "$parameter_bugly" == "2" ]
-    then
-    echo "\033[32m****************\n开始上传bugly\n****************\033[0m\n"
-    bugly_app_id="fc42b13a1b"
-    bugly_app_key="b1fca7f9-29cf-4e64-ab1f-444391c25cfc"
-    
-    #dsym 路径
-    dsymfile_path="${export_path_archive}/dSYMs/${app_name}.app.dSYM"
-    
-    zip_path="${export_path_ipa}"
-    
-    java -jar buglySymboliOS.jar \
-    -i "${dsymfile_path}" \
-    -u -id "${bugly_app_id}" \
-    -key "${bugly_app_key}" \
-    -version "${bundle_version}" \
-    -o "${zip_path}"
-    echo "\033[32m****************\n上传bugly完成\n****************\033[0m\n"
-    fi
-}uploadRun
+}
+uploadRun
+
