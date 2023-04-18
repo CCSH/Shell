@@ -16,7 +16,7 @@ file_name="Shell"
 #parameter_export="1"
 
 #是否为工作组
-#parameter_workspace="1"
+parameter_workspace="1"
 #打包模式
 #parameter_configuration="1"
 
@@ -26,7 +26,7 @@ file_name="Shell"
 #parameter_upload="1"
 
 #是否上传bugly
-parameter_bugly="1"
+#parameter_bugly="1"
 
 #上传appstore
 #账号
@@ -269,12 +269,12 @@ appStoreUserNameRun() {
     fi
 }
 
-#选择上传 AppStore
+# 选择上传 AppStore
 if test "$parameter_upload" == "2" ; then
     appStoreUserNameRun
 fi
 
-#选填蒲公英更新文案
+# 选填蒲公英更新文案
 pgyUpdateContent() {
     echo "\033[36;1m请输入蒲公英更新文案，选填(输入完毕, 按回车即可) \033[0m"
     #读取用户输入
@@ -283,7 +283,7 @@ pgyUpdateContent() {
     sleep 0.5
 }
 
-#选择上传 蒲公英
+# 选择上传 蒲公英
 if test "$parameter_upload" == "1" ; then
     pgyUpdateContent
 fi
@@ -299,14 +299,14 @@ archiveRun() {
         #强制删除旧的文件夹
         rm -rf $export_path_ipa
 
-        # 指定输出文件目录不存在则创建
+        #指定输出文件目录不存在则创建
         if test -d "$export_path_ipa"; then
             echo $export_path_ipa
         else
             mkdir -pv $export_path_ipa
         fi
 
-        # 清理工程
+        #清理工程
         xcodebuild clean -configuration "$parameter_configuration" -alltargets
 
         echo "\n\033[32m****************\n清理工程完毕\n****************\033[0m\n"
@@ -331,8 +331,8 @@ archiveRun() {
 
     fi
 
-    # 检查是否构建成功
-    # xcarchive 实际是一个文件夹不是一个文件所以使用 -d 判断
+    #检查是否构建成功
+    #xcarchive 实际是一个文件夹不是一个文件所以使用 -d 判断
     if test -d "$export_path_archive"; then
         echo "\n\033[32m****************\n项目归档成功\n****************\033[0m\n"
     else
@@ -346,6 +346,12 @@ archiveRun
 exportRun() {
     if test "$parameter_export" == "1" ; then
         echo "\033[32m****************\n开始导出ipa\n****************\033[0m\n"
+        #删除之前的IPA
+        old_ipa=$(find . -name *.ipa)
+        echo $old_ipa
+        if test ${#old_ipa} != 0 ; then
+            rm -rf $old_ipa
+        fi
         #1、打包命令
         #2、归档文件地址
         #3、ipa输出地址
@@ -359,8 +365,6 @@ exportRun() {
 
     #app 名字
     app_name=$(find . -name *.ipa | awk -F "[/.]" '{print $(NF-1)}')
-    echo "\n\033[32m****************\n$app_name\n****************\033[0m\n"
-    
     #app 版本号
     version=$(xcodebuild -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION =')
     #指定输出ipa名称
@@ -368,11 +372,10 @@ exportRun() {
 
     #ipa最终路径
     path_ipa=$export_path_ipa/$ipa_name.ipa
-
-    # 修改ipa文件名称
+    #修改ipa文件名称
     mv $export_path_ipa/$app_name.ipa $path_ipa
 
-    # 检查文件是否存在
+    #检查文件是否存在
     if test -f "$path_ipa"; then
         echo "\n\033[32m****************\n导出 $app_name.ipa 包成功\n****************\033[0m\n"
     else
