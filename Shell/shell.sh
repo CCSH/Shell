@@ -19,13 +19,14 @@ file_name="Shell"
 #parameter_workspace="1"
 #打包模式
 #parameter_configuration="1"
+
 #打包类型
 #parameter_type="1"
-
 #上传类型
 #parameter_upload="1"
+
 #是否上传bugly
-#parameter_bugly="1"
+parameter_bugly="1"
 
 #上传appstore
 #账号
@@ -358,10 +359,12 @@ exportRun() {
 
     #app 名字
     app_name=$(find . -name *.ipa | awk -F "[/.]" '{print $(NF-1)}')
+    echo "\n\033[32m****************\n$app_name\n****************\033[0m\n"
+    
     #app 版本号
-    bundle_version=$(xcodebuild -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION =')
-    #指定输出ipa名称 : project_name + bundle_version
-    ipa_name="$app_name-V$bundle_version($bundle_version)"
+    version=$(xcodebuild -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION =')
+    #指定输出ipa名称
+    ipa_name="$app_name-V$version($bundle_version)"
 
     #ipa最终路径
     path_ipa=$export_path_ipa/$ipa_name.ipa
